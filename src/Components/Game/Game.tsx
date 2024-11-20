@@ -13,16 +13,16 @@ const Game = () => {
   ];
 
   const checkWin = (patterns: Array<Array<number>>) => {
-    if (!field.includes('')) {
-      setIsDraw(true);
-      setIsGameEnded(true);
-    }
     
     for (const pattern of patterns) {
       if (field[pattern[0]] && field[pattern[0]] === field[pattern[1]] && field[pattern[1]] === field[pattern[2]]) {
         setIsGameEnded(true);
         return setCurrentPlayer(currentPlayer);
       }
+    }
+    if (!field.includes('')) {
+      setIsDraw(true);
+      setIsGameEnded(true);
     }
   } 
 

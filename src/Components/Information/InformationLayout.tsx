@@ -9,7 +9,7 @@ interface InformationLayoutProps {
 export const InformationLayout: React.FC<InformationLayoutProps> = ({ currentPlayer, isGameEnded, isDraw }) => {
   return (
     <div className={`${styles.Information} ${isDraw ? styles.draw : isGameEnded ? styles.win : ''}`}>
-      {isDraw ? 'Ничья' : isGameEnded ? `Победил ${currentPlayer}` : `Ходит ${currentPlayer}`}
+      {isDraw ? 'Ничья' : isGameEnded ? `Победил ${currentPlayer}` : `Xодит ${currentPlayer}`}
     </div>
   )
 }
