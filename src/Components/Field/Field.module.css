@@ -1,0 +1,40 @@
+.fieldContainer {
+  height: 75%;
+  width: 90%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-self: center;
+  align-self: center;
+  box-shadow: inset 2px 2px 7px 0px black;
+  background-color: rgb(161, 100, 151);
+}
+
+.fieldContainer > span {
+  display: flex;
+  border: 1px solid;
+  justify-content: center;
+  align-items: center;
+  font-size: 9vh;
+  line-height: 0;
+  user-select: none;
+  cursor: cell;
+  
+}
+
+span:not(.activeCell):hover {
+  background-color: rgb(139, 84, 131);
+  box-shadow: inset 2px 2px 7px 0px;
+}
+
+span:not(.activeCell):active {
+  box-shadow: 2px 2px 7px 0px;
+}
+
+.activeCell {
+  background-color: rgb(139, 71, 128);
+  box-shadow: 2px 2px 7px 0px;
+}
+
+.activeCell:hover {
+  cursor: default;
+}
