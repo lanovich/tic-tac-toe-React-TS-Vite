@@ -1,53 +1,78 @@
-import { useState } from 'react';
-import { GameLayout } from './GameLayout';
+import { store } from "../../store/store";
+import { GameLayout } from "./GameLayout";
+import { Action } from "../../types";
+import { useEffect, useState } from "react";
 
 const Game = () => {
-  const [currentPlayer, setCurrentPlayer] = useState<'X'|'O'>('X');
-  const [field, setField] = useState<Array<string>>(Array(9).fill(''));
-  const [isGameEnded, setIsGameEnded] = useState<boolean>(false);
-  const [isDraw, setIsDraw] = useState<boolean>(false);
+  const { dispatch, getState } = store;
+
+  const [state, setState] = useState(getState());
+
   const WIN_PATTERNS = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Варианты побед по горизонтали
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Варианты побед по вертикали
-    [0, 4, 8], [2, 4, 6] // Варианты побед по диагонали
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
   ];
 
-  const checkWin = (patterns: Array<Array<number>>) => {
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      setState(getState());
+    });
+    return () => unsubscribe();
+  }, [getState]);
+
+  useEffect(() => {
+    if (state.isGameEnded) return;
+    const { field } = state;
     
-    for (const pattern of patterns) {
-      if (field[pattern[0]] && field[pattern[0]] === field[pattern[1]] && field[pattern[1]] === field[pattern[2]]) {
-        setIsGameEnded(true);
-        return setCurrentPlayer(currentPlayer);
+    for (const pattern of WIN_PATTERNS) {
+      if (
+        field[pattern[0]] &&
+        field[pattern[0]] === field[pattern[1]] &&
+        field[pattern[1]] === field[pattern[2]]
+      ) {
+        dispatch({ type: "SET_IS_GAME_ENDED", payload: true } as Action);
+        return;
       }
     }
-    if (!field.includes('')) {
-      setIsDraw(true);
-      setIsGameEnded(true);
-    }
-  } 
 
-  const makeMove = (index: number) => {
-    if (field[index] === '' && !isGameEnded) {
-      field[index] = currentPlayer;
-      const newField = [...field];
-      setField(newField);
-      setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
-      checkWin(WIN_PATTERNS);
+    if (!field.includes("")) {
+      dispatch({ type: "SET_IS_DRAW", payload: true } as Action);
+      dispatch({ type: "SET_IS_GAME_ENDED", payload: true } as Action);
     }
-  }
+  }, [state]);
 
-  const restartGame = () => {
-    setCurrentPlayer('X')
-    setField(Array(9).fill(''))
-    setIsGameEnded(false)
-    setIsDraw(false)
-  }
+  console.log(state)
+
+  const handleMakeMove = (index: number) => {
+    if (state.field[index] === "" && !state.isGameEnded) {
+      dispatch({
+        type: "MAKE_MOVE",
+        payload: { index, currentPlayer: state.currentPlayer },
+      });
+    }
+  };
+
+  const handleRestartGame = () => {
+    dispatch({ type: "SET_IS_DRAW", payload: false } as Action);
+    dispatch({ type: "RESTART_GAME" });
+  };
 
   return (
-    <>
-      <GameLayout currentPlayer={currentPlayer} field={field} isGameEnded={isGameEnded} isDraw={isDraw} makeMove={makeMove} restartGame={restartGame} />
-    </>
-  )
-}
+    <GameLayout
+      currentPlayer={state.currentPlayer}
+      field={state.field}
+      isGameEnded={state.isGameEnded}
+      isDraw={state.isDraw}
+      makeMove={handleMakeMove}
+      restartGame={handleRestartGame}
+    />
+  );
+};
 
-export default Game
+export default Game;
