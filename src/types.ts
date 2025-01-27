@@ -15,6 +15,7 @@ export type Action =
   | { type: "RESTART_GAME" }
   | { type: "SET_IS_GAME_ENDED"; payload: boolean }
   | { type: "SET_IS_DRAW"; payload: boolean }
-  | { type: "__INIT__" };
+  | { type: "__INIT__" }
+  | { type: "CHECK_WINNER" };
 
 export type Dispatch = (action: Action) => void;

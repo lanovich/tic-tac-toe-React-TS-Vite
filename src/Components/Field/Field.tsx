@@ -1,13 +1,42 @@
-import { FieldLayout } from "./FieldLayout"
+import { useDispatch, useSelector } from "react-redux";
+import styles from "./Field.module.css";
+import {
+  selectCurrentPlayer,
+  selectField,
+  selectWinner,
+} from "../../selectors";
+import { makeMove, setIsGameEnded } from "../../actions";
+import { useEffect } from "react";
 
-interface FieldProps {
-  field: string[];
-  makeMove: (index: number) => void
-}
+export const Field = () => {
+  const dispatch = useDispatch();
+  const field = useSelector(selectField);
+  const winner = useSelector(selectWinner);
+  const currentPlayer = useSelector(selectCurrentPlayer);
 
-export const Field: React.FC<FieldProps> = ( { field, makeMove }) => {
+  useEffect(() => {
+    if (winner) {
+      dispatch(setIsGameEnded(true));
+    }
+  }, [dispatch, field, winner]);
+
+  const handleMakeMove = (index: number) => {
+    dispatch(makeMove(index, currentPlayer));
+  };
 
   return (
-    <FieldLayout field={field} makeMove={makeMove}></FieldLayout>
-  )
-}
+    <div className={styles.fieldContainer}>
+      {field.map((cell, index) => {
+        return (
+          <span
+            className={cell !== "" ? styles.activeCell : ""}
+            key={index}
+            onClick={() => handleMakeMove(index)}
+          >
+            {cell}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
