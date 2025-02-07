@@ -18,7 +18,6 @@
   line-height: 0;
   user-select: none;
   cursor: cell;
-  
 }
 
 span:not(.activeCell):hover {

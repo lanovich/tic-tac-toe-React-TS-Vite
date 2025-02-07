@@ -1,16 +1,27 @@
-import { InformationLayout } from "./InformationLayout"
+import { useSelector } from "react-redux";
+import styles from "./Information.module.css";
+import {
+  selectCurrentPlayer,
+  selectIsDraw,
+  selectIsGameEnded,
+} from "../../selectors";
 
-interface InformationProps {
-  currentPlayer: 'X' | 'O';
-  isGameEnded: boolean;
-  isDraw: boolean;
-}
+export const Information = () => {
+  const currentPlayer = useSelector(selectCurrentPlayer);
+  const isGameEnded = useSelector(selectIsGameEnded);
+  const isDraw = useSelector(selectIsDraw);
 
-export const Information: React.FC<InformationProps> = ({ currentPlayer, isGameEnded, isDraw }) => {
-
-
-  
   return (
-    <InformationLayout currentPlayer={currentPlayer} isGameEnded={isGameEnded} isDraw={isDraw}></InformationLayout>
-  )
-}
+    <div
+      className={`${styles.Information} ${
+        isDraw ? styles.draw : isGameEnded ? styles.win : ""
+      }`}
+    >
+      {isDraw
+        ? "Ничья"
+        : isGameEnded
+        ? `Победил ${currentPlayer === "X" ? "O" : "X"}`
+        : `Ходит ${currentPlayer}`}
+    </div>
+  );
+};

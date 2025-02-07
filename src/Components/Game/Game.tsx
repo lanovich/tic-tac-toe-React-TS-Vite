@@ -1,77 +1,21 @@
-import { store } from "../../store/store";
-import { GameLayout } from "./GameLayout";
-import { Action } from "../../types";
-import { useEffect, useState } from "react";
+import styles from "./Game.module.css";
+import { Field, Information } from "./";
+import { useDispatch } from "react-redux";
+import { restartGame } from "../../actions";
 
-const Game = () => {
-  const { dispatch, getState } = store;
-
-  const [state, setState] = useState(getState());
-
-  const WIN_PATTERNS = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      setState(getState());
-    });
-    return () => unsubscribe();
-  }, [getState]);
-
-  useEffect(() => {
-    if (state.isGameEnded) return;
-    const { field } = state;
-    
-    for (const pattern of WIN_PATTERNS) {
-      if (
-        field[pattern[0]] &&
-        field[pattern[0]] === field[pattern[1]] &&
-        field[pattern[1]] === field[pattern[2]]
-      ) {
-        dispatch({ type: "SET_IS_GAME_ENDED", payload: true } as Action);
-        return;
-      }
-    }
-
-    if (!field.includes("")) {
-      dispatch({ type: "SET_IS_DRAW", payload: true } as Action);
-      dispatch({ type: "SET_IS_GAME_ENDED", payload: true } as Action);
-    }
-  }, [state]);
-
-  console.log(state)
-
-  const handleMakeMove = (index: number) => {
-    if (state.field[index] === "" && !state.isGameEnded) {
-      dispatch({
-        type: "MAKE_MOVE",
-        payload: { index, currentPlayer: state.currentPlayer },
-      });
-    }
-  };
+export const Game = () => {
+  const dispatch = useDispatch();
 
   const handleRestartGame = () => {
-    dispatch({ type: "SET_IS_DRAW", payload: false } as Action);
-    dispatch({ type: "RESTART_GAME" });
+    dispatch(restartGame());
   };
 
   return (
-    <GameLayout
-      currentPlayer={state.currentPlayer}
-      field={state.field}
-      isGameEnded={state.isGameEnded}
-      isDraw={state.isDraw}
-      makeMove={handleMakeMove}
-      restartGame={handleRestartGame}
-    />
+    <div className={styles.mainContainer}>
+      <Information />
+      <Field />
+      <button onClick={handleRestartGame}>Restart</button>
+    </div>
   );
 };
 
