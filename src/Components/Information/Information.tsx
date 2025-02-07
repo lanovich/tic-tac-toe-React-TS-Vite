@@ -1,27 +1,29 @@
-import { useSelector } from "react-redux";
-import styles from "./Information.module.css";
-import {
-  selectCurrentPlayer,
-  selectIsDraw,
-  selectIsGameEnded,
-} from "../../selectors";
+import { Component } from "react";
+import { AppState } from "../../types";
+import { selectCurrentPlayer, selectIsDraw, selectIsGameEnded } from "../../selectors";
+import { connect } from "react-redux";
 
-export const Information = () => {
-  const currentPlayer = useSelector(selectCurrentPlayer);
-  const isGameEnded = useSelector(selectIsGameEnded);
-  const isDraw = useSelector(selectIsDraw);
+interface InformationProps {
+  currentPlayer: string;
+  isGameEnded: boolean;
+  isDraw: boolean;
+}
 
-  return (
-    <div
-      className={`${styles.Information} ${
-        isDraw ? styles.draw : isGameEnded ? styles.win : ""
-      }`}
-    >
-      {isDraw
-        ? "Ничья"
-        : isGameEnded
-        ? `Победил ${currentPlayer === "X" ? "O" : "X"}`
-        : `Ходит ${currentPlayer}`}
-    </div>
-  );
-};
+class Information extends Component<InformationProps> {
+  render() {
+    const { currentPlayer, isGameEnded, isDraw } = this.props;
+    return (
+      <div className={`font-bold text-[3vh] bg-[rgb(168,110,185)] shadow-[3px_3px_10px_0px_rgb(139,72,111)] m-[6%] p-[2%] rounded-[10px] ${isDraw ? "bg-[rgb(179,196,82)]" : isGameEnded ? "bg-green-400" : "bg-[rgb(168,110,185)]"}`}>
+        {isDraw ? "Ничья" : isGameEnded ? `Победил ${currentPlayer === "X" ? "O" : "X"}` : `Ходит ${currentPlayer}`}
+      </div>
+    );
+  }
+}
+
+const mapStateToPropsInfo = (state: AppState) => ({
+  currentPlayer: selectCurrentPlayer(state),
+  isGameEnded: selectIsGameEnded(state),
+  isDraw: selectIsDraw(state),
+});
+
+export const ConnectedInformation = connect(mapStateToPropsInfo)(Information);
